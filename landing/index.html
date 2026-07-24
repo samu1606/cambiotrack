@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CambioTrack — Detecta cambios web al instante</title>
+  <meta name="description" content="CambioTrack monitorea páginas web y te avisa cuando algo cambia. Ideal para seguimiento de precios, licitaciones, y cambios regulatorios.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      line-height: 1.6;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Hero */
+    .hero {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse 60% 60% at 50% 30%, rgba(168,85,247,0.06), transparent 60%),
+                  radial-gradient(ellipse 40% 40% at 80% 50%, rgba(34,211,238,0.04), transparent 60%);
+    }
+    .hero-content { position: relative; max-width: 650px; padding: 5rem 0; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2);
+      color: #a855f7; font-size: 0.8rem; font-weight: 500;
+      padding: 0.35rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px; background: #a855f7; border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.3 } }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.25rem;
+    }
+    .hero h1 span { color: #a855f7; }
+    .hero p { font-size: 1.1rem; color: #a1a1aa; max-width: 500px; margin-bottom: 2rem; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.5rem; border-radius: 0.6rem;
+      font-size: 0.95rem; font-weight: 600; text-decoration: none;
+      transition: all 0.15s; cursor: pointer; border: none;
+    }
+    .btn-primary { background: #a855f7; color: #fff; }
+    .btn-primary:hover { background: #c084fc; }
+    .btn-outline { background: transparent; color: #e4e4e7; border: 1px solid #3f3f46; }
+    .btn-outline:hover { border-color: #71717a; background: rgba(255,255,255,0.03); }
+
+    /* Sections */
+    .section { padding: 5rem 0; }
+    .section-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #a855f7; margin-bottom: 0.75rem; }
+    .section h2 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    .section > .container > p { color: #a1a1aa; max-width: 550px; margin-bottom: 3rem; }
+
+    /* Use cases */
+    .usecases { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+    .usecase {
+      background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem;
+      padding: 1.5rem; transition: border-color 0.15s;
+    }
+    .usecase:hover { border-color: rgba(168,85,247,0.3); }
+    .usecase-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .usecase h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .usecase p { font-size: 0.85rem; color: #a1a1aa; line-height: 1.5; }
+
+    /* Features */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .feature {
+      background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem;
+      padding: 1.5rem; transition: border-color 0.15s;
+    }
+    .feature:hover { border-color: #3f3f46; }
+    .feature-icon {
+      width: 2.5rem; height: 2.5rem; background: rgba(168,85,247,0.1);
+      border-radius: 0.6rem; display: flex; align-items: center;
+      justify-content: center; font-size: 1.2rem; margin-bottom: 1rem;
+    }
+    .feature h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .feature p { font-size: 0.9rem; color: #a1a1aa; line-height: 1.6; }
+
+    /* Pricing */
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .plan {
+      background: #18181b; border: 1px solid #27272a; border-radius: 0.75rem;
+      padding: 2rem 1.5rem; display: flex; flex-direction: column;
+    }
+    .plan.featured { border-color: rgba(168,85,247,0.3); background: linear-gradient(180deg, rgba(168,85,247,0.04), transparent); }
+    .plan-name { font-size: 0.85rem; font-weight: 600; color: #a1a1aa; margin-bottom: 0.5rem; }
+    .plan-price { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+    .plan-price small { font-size: 1rem; font-weight: 400; color: #71717a; }
+    .plan-features { list-style: none; flex: 1; margin-bottom: 2rem; }
+    .plan-features li {
+      font-size: 0.9rem; padding: 0.35rem 0; color: #a1a1aa;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .plan-features li::before { content: '✓'; color: #a855f7; font-weight: 700; font-size: 0.8rem; }
+    .plan .btn { width: 100%; justify-content: center; }
+    .plan.featured .btn { background: #a855f7; color: #fff; }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+    .step { text-align: center; padding: 1.5rem; }
+    .step-number {
+      width: 3rem; height: 3rem; background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.2); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; color: #a855f7; margin: 0 auto 1rem;
+    }
+    .step h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .step p { font-size: 0.9rem; color: #a1a1aa; }
+
+    /* CTA */
+    .cta { text-align: center; padding: 5rem 0; }
+    .cta h2 { font-size: 2rem; margin-bottom: 1rem; }
+    .cta p { color: #a1a1aa; margin-bottom: 2rem; }
+
+    footer { border-top: 1px solid #27272a; padding: 2rem 0; text-align: center; font-size: 0.85rem; color: #71717a; }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge"><span class="dot"></span> Monitoreo inteligente de cambios</div>
+      <h1>Lo que cambia en la web<br><span>llega a ti primero.</span></h1>
+      <p>CambioTrack vigila cualquier página web y te avisa por Telegram, WhatsApp o email cuando detecta un cambio. Nunca más pierdas una oportunidad por no revisar a tiempo.</p>
+      <div class="hero-actions">
+        <a href="#planes" class="btn btn-primary">Ver planes →</a>
+        <a href="#casos" class="btn btn-outline">Casos de uso</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="casos">
+  <div class="container">
+    <div class="section-label">Casos de uso</div>
+    <h2>Información que vale oro sin esfuerzo</h2>
+    <p>Configurás el monitor una vez. CambioTrack hace el resto 24/7.</p>
+    <div class="usecases">
+      <div class="usecase">
+        <div class="usecase-icon">💰</div>
+        <h3>Precios de competencia</h3>
+        <p>Detectá cambios de precio en sitios de tu competencia. Ajustá tu estrategia en tiempo real.</p>
+      </div>
+      <div class="usecase">
+        <div class="usecase-icon">🏛️</div>
+        <h3>Licitaciones públicas</h3>
+        <p>Monitoreá SECOP, Colombia Compra y portales de contratación. Enterate antes que nadie.</p>
+      </div>
+      <div class="usecase">
+        <div class="usecase-icon">📋</div>
+        <h3>Cambios regulatorios</h3>
+        <p>Seguí páginas de entes reguladores, ministerios y DIAN. Cumplimiento sin sorpresas.</p>
+      </div>
+      <div class="usecase">
+        <div class="usecase-icon">💼</div>
+        <h3>Ofertas de empleo</h3>
+        <p>Monitoreá portales de empleo y páginas de empresas objetivo. Aplicá antes que los demás.</p>
+      </div>
+      <div class="usecase">
+        <div class="usecase-icon">🏠</div>
+        <h3>Finca raíz</h3>
+        <p>Detectá nuevos listados y cambios de precio en portales inmobiliarios. El mejor deal, primero.</p>
+      </div>
+      <div class="usecase">
+        <div class="usecase-icon">📦</div>
+        <h3>Restock de productos</h3>
+        <p>Sabé al instante cuando vuelve a estar disponible ese producto agotado. Sin refrescar la página.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background: #0c0c12;">
+  <div class="container">
+    <div class="section-label">Funcionalidades</div>
+    <h2>Mucho más que un detector de cambios</h2>
+    <p>Tecnología avanzada para que no se te escape nada.</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <h3>Selector visual</h3>
+        <p>Seleccioná solo la parte de la página que te interesa monitorear. Sin ruido, solo lo importante.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🤖</div>
+        <h3>IA para filtrar ruido</h3>
+        <p>Conectá cualquier LLM (ChatGPT, Gemini, Ollama) para filtrar cambios irrelevantes y recibir solo alertas accionables.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔐</div>
+        <h3>Páginas con login</h3>
+        <p>Monitoreá contenido detrás de autenticación. Ideal para intranets, portales de proveedores y dashboards privados.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔔</div>
+        <h3>85+ canales de alerta</h3>
+        <p>Telegram, WhatsApp, Email, Discord, Slack, Webhooks. Elegí cómo querés recibir las notificaciones.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⏱️</div>
+        <h3>Intervalos flexibles</h3>
+        <p>Desde cada 30 segundos hasta una vez al día. Vos definís la frecuencia según la urgencia.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Historial de cambios</h3>
+        <p>Compará versiones anteriores de cualquier página. Diferencias resaltadas. Nada se pierde.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-label">En 3 pasos</div>
+    <h2>Empezá en menos de 2 minutos</h2>
+    <p>Sin instalar nada. Sin código. Solo la URL que querés vigilar.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Pega la URL</h3>
+        <p>Indicá qué página web querés monitorear. Nosotros hacemos el resto.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Seleccioná qué vigilar</h3>
+        <p>Usá el selector visual para elegir solo la sección que te importa.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Recibí alertas</h3>
+        <p>Cuando algo cambie, te llega la notificación. Simple, efectivo, inmediato.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="planes" style="background: #0c0c12;">
+  <div class="container">
+    <div class="section-label">Planes</div>
+    <h2>Simple, sin sorpresas</h2>
+    <p>Todos los planes incluyen 14 días de prueba gratis. Sin tarjeta de crédito.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">$9<small>/mes</small></div>
+        <ul class="plan-features">
+          <li>Hasta 10 monitores</li>
+          <li>Intervalo desde 1 hora</li>
+          <li>Alertas por email y Telegram</li>
+          <li>Selector visual básico</li>
+          <li>Soporte por email</li>
+        </ul>
+        <a href="#" class="btn btn-outline">Empezar gratis</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-name">Pro · Más popular</div>
+        <div class="plan-price">$19<small>/mes</small></div>
+        <ul class="plan-features">
+          <li>Hasta 50 monitores</li>
+          <li>Intervalo desde 5 minutos</li>
+          <li>Todos los canales de alerta</li>
+          <li>Filtro con IA (LLM)</li>
+          <li>Páginas con login</li>
+          <li>Soporte prioritario</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Empezar gratis</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Business</div>
+        <div class="plan-price">$39<small>/mes</small></div>
+        <ul class="plan-features">
+          <li>Hasta 200 monitores</li>
+          <li>Intervalo desde 30 segundos</li>
+          <li>Todo lo de Pro +</li>
+          <li>Webhooks personalizados</li>
+          <li>API de acceso</li>
+          <li>Soporte 24/7</li>
+        </ul>
+        <a href="#" class="btn btn-outline">Empezar gratis</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2>No pierdas otra oportunidad por no revisar a tiempo</h2>
+    <p>14 días gratis. Cancelá cuando quieras.</p>
+    <a href="#" class="btn btn-primary" style="font-size:1rem; padding:0.85rem 2rem;">Comenzar prueba gratis →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>CambioTrack — Construido sobre Changedetection.io (Apache 2.0). © 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>
