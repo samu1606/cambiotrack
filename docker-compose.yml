@@ -3,7 +3,6 @@ version: "3.8"
 # =============================================================================
 # CambioTrack — docker-compose para Dokploy
 # Detección de cambios en páginas web. Apache 2.0 License.
-# Dokploy maneja el proxy inverso y SSL.
 # =============================================================================
 
 services:
@@ -13,14 +12,8 @@ services:
     restart: always
     volumes:
       - changedetection_data:/datastore
-    networks:
-      - cambiotrack
-    ports:
-      - "5000:5000"
-
-networks:
-  cambiotrack:
-    driver: bridge
+    expose:
+      - "5000"
 
 volumes:
   changedetection_data:
